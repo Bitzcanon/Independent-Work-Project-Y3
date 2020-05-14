@@ -55,7 +55,7 @@ public class PlayerController2D : MonoBehaviour
         else
         {
             isGrounded = false;
-            animator.Play("player_jump");
+            animator.Play("knight_jump");
         }
 
         if (Input.GetKey("d") || Input.GetKey("right"))
@@ -63,7 +63,7 @@ public class PlayerController2D : MonoBehaviour
             rb2D.velocity = new Vector2(runSpeed, rb2D.velocity.y);
 
             if (isGrounded)
-                animator.Play("player_run");
+                animator.Play("knight_walk");
 
             spriteRenderer.flipX = false;
         }
@@ -72,14 +72,14 @@ public class PlayerController2D : MonoBehaviour
             rb2D.velocity = new Vector2(-runSpeed, rb2D.velocity.y);
 
             if (isGrounded)
-                animator.Play("player_run");
+                animator.Play("knight_walk");
 
             spriteRenderer.flipX = true;
         }
         else
         {
             if (isGrounded)
-                animator.Play("player_idle");
+                animator.Play("knight_idle");
 
             rb2D.velocity = new Vector2(0, rb2D.velocity.y); //Reset horizontal velocity
         }
@@ -101,7 +101,7 @@ public class PlayerController2D : MonoBehaviour
             jumpPressedRemember = 0f;
             groundedRemember = 0f;
             rb2D.velocity = new Vector2(rb2D.velocity.x, maxJumpVelocity);
-            animator.Play("player_jump");
+            animator.Play("knight_jump");
         }
         if (Input.GetKeyUp("space"))
         {
