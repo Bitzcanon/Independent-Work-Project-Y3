@@ -644,7 +644,7 @@ Rigidbody2D:
   m_GravityScale: 3
   m_Material: {fileID: 0}
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &1542392737
@@ -692,6 +692,8 @@ MonoBehaviour:
   maxJumpHeight: 3.5
   minJumpHeight: 0.8
   timeToJumpApex: 0.4
+  jumpSlackTimer: 0.2
+  groundedSlackTimer: 0.15
 --- !u!1 &1674948202
 GameObject:
   m_ObjectHideFlags: 0
