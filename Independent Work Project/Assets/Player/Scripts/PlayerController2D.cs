@@ -9,12 +9,11 @@ public class PlayerController2D : MonoBehaviour
     private Rigidbody2D rb2D;
     private SpriteRenderer spriteRenderer;
 
+    //Jumping
     private bool isGrounded;
+    private float jumpTimeCounter;
+    private bool isJumping;
 
-    private float gravity;
-
-    private float maxJumpVelocity;
-    private float minJumpVelocity;
     private float jumpPressedRemember = 0;
     private float groundedRemember = 0;
 
@@ -23,21 +22,18 @@ public class PlayerController2D : MonoBehaviour
     public Transform groundCheckL;
     public Transform groundCheckR;
 
+    //Movement
     public float runSpeed = 7f;
-    public float maxJumpHeight = 2f;
-    public float minJumpHeight = 0.3f;
-    public float timeToJumpApex = 0.4f; //How long it takes for player to reach highest point
+    public float jumpForce = 5f;
+    public float jumpTime;
 
-    public float jumpSlackTimer = 0.2f; //Allow player slack in jump timings for smoother controls
-    public float groundedSlackTimer = 0.2f; //Allow player slack in jumping off platforms
+    //Player slack
+    public float jumpSlackTimer = 0.3f; //Allow player slack in jump timings for smoother controls
+    public float groundedSlackTimer = 0.15f; //Allow player slack in jumping off platforms
 
     void Start()
     {
         isGrounded = true;
-
-        gravity = -(2 * maxJumpHeight) / Mathf.Pow(timeToJumpApex, 2f);
-        maxJumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
-        minJumpVelocity = Mathf.Sqrt(2 * Math.Abs(gravity) * minJumpHeight);
 
         animator = GetComponent<Animator>();
         rb2D = GetComponent<Rigidbody2D>();
@@ -96,20 +92,34 @@ public class PlayerController2D : MonoBehaviour
             groundedRemember = groundedSlackTimer;
         }
 
-        if ((jumpPressedRemember > 0f) && (groundedRemember > 0f)) //Recently jumped or recently grounded checks before jumping
+        if ((jumpPressedRemember >= 0f) && (groundedRemember >= 0f)) //Recently jumped or recently grounded checks before jumping
         {
             jumpPressedRemember = 0f;
             groundedRemember = 0f;
-            rb2D.velocity = new Vector2(rb2D.velocity.x, maxJumpVelocity);
+
+            isJumping = true;
+            jumpTimeCounter = jumpTime;
+
+            rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
             animator.Play("knight_jump");
         }
+        //For variable jump height
+        if (Input.GetKey("space") && isJumping) //Prevent double jump with isJumping check
+        {
+           if (jumpTimeCounter > 0)
+           {
+                rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
+                jumpTimeCounter -= Time.deltaTime;
+           }
+           else
+           {
+                isJumping = false;
+           }
+        }
+
         if (Input.GetKeyUp("space"))
         {
-            if (rb2D.velocity.y > minJumpVelocity)
-            {
-                rb2D.velocity = new Vector2(rb2D.velocity.x, minJumpVelocity);
-            }
+            isJumping = false;
         }
     }
-
 }
