@@ -1112,7 +1112,7 @@ TextureImporter:
       name: knight_jumpAttack_01
       rect:
         serializedVersion: 2
-        x: 134
+        x: 132
         y: 1028
         width: 169
         height: 145
@@ -1133,7 +1133,7 @@ TextureImporter:
       name: knight_jumpAttack_02
       rect:
         serializedVersion: 2
-        x: 650
+        x: 652
         y: 1028
         width: 165
         height: 145
@@ -1155,7 +1155,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1235
-        y: 1030
+        y: 1028
         width: 214
         height: 152
       alignment: 7
@@ -1176,7 +1176,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1756
-        y: 1027
+        y: 1028
         width: 212
         height: 146
       alignment: 7
@@ -1217,7 +1217,7 @@ TextureImporter:
       name: knight_anims_45
       rect:
         serializedVersion: 2
-        x: 736
+        x: 738
         y: 772
         width: 208
         height: 146

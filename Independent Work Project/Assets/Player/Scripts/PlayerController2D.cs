@@ -17,6 +17,10 @@ public class PlayerController2D : MonoBehaviour
     private float jumpPressedRemember = 0;
     private float groundedRemember = 0;
 
+    //Attacking
+    private bool isAttacking = false;
+    private float timeBetweenAttack;
+
     //Public variables
     public Transform groundCheckC;
     public Transform groundCheckL;
@@ -31,6 +35,16 @@ public class PlayerController2D : MonoBehaviour
     public float jumpSlackTimer = 0.3f; //Allow player slack in jump timings for smoother controls
     public float groundedSlackTimer = 0.15f; //Allow player slack in jumping off platforms
 
+    //Attacking
+    public float startTimeBetweenAttack;
+    public Transform strikeAttackPosition;
+    public Transform jumpAttackPosition;
+    public LayerMask whatIsEnemies;
+    public float strikeAttackRangeX;
+    public float strikeAttackRangeY;
+    public float jumpAttackRange;
+    public int damage;
+
     void Start()
     {
         isGrounded = true;
@@ -38,6 +52,67 @@ public class PlayerController2D : MonoBehaviour
         animator = GetComponent<Animator>();
         rb2D = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void Update()
+    {
+
+        if (timeBetweenAttack <= 0)
+        {
+            if (Input.GetButtonDown("Fire1") && !isAttacking)
+            {
+                isAttacking = true;
+
+                //Animations
+                if (!isGrounded)
+                {
+                    animator.Play("knight_jumpattack");
+                    StartCoroutine(DoBasicAttack(0.4f, "jumpattack"));
+                }
+                else
+                {
+                    animator.Play("knight_strike");
+                    StartCoroutine(DoBasicAttack(0.3f, "strike"));
+                }
+            }
+        }
+        else
+            timeBetweenAttack -= Time.deltaTime;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(strikeAttackPosition.position, new Vector3(strikeAttackRangeX, strikeAttackRangeY, 1));
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(jumpAttackPosition.position, jumpAttackRange);
+    }
+
+    IEnumerator DoBasicAttack(float attackDuration, string attackType)
+    {
+        //For hitting enemies
+
+        if (attackType == "jumpattack")
+        {
+            Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(strikeAttackPosition.position, jumpAttackRange, whatIsEnemies);
+            for (int i = 0; i < enemiesToDamage.Length; i++)
+            {
+                enemiesToDamage[i].GetComponent<PlayerInfo>().TakeDamage(damage); //Reduce HP
+            }
+        }
+        else if (attackType == "strike")
+        {
+            Collider2D[] enemiesToDamage = Physics2D.OverlapBoxAll(strikeAttackPosition.position, new Vector2(strikeAttackRangeX, strikeAttackRangeY), 0, whatIsEnemies);
+            for (int i = 0; i < enemiesToDamage.Length; i++)
+            {
+                enemiesToDamage[i].GetComponent<PlayerInfo>().TakeDamage(damage); //Reduce HP
+            }
+        }
+        timeBetweenAttack = startTimeBetweenAttack;
+
+        yield return new WaitForSeconds(attackDuration);
+        isAttacking = false;
     }
 
     private void FixedUpdate() //For physics updating
@@ -51,30 +126,32 @@ public class PlayerController2D : MonoBehaviour
         else
         {
             isGrounded = false;
-            animator.Play("knight_jump");
+
+            if (!isAttacking)
+                animator.Play("knight_jump");
         }
 
         if (Input.GetKey("d") || Input.GetKey("right"))
         {
             rb2D.velocity = new Vector2(runSpeed, rb2D.velocity.y);
 
-            if (isGrounded)
+            if (isGrounded && !isAttacking)
                 animator.Play("knight_walk");
 
-            spriteRenderer.flipX = false;
+            transform.localScale = new Vector3(1.5f, 1.5f, 1.5f); //Turn whole player to the right
         }
         else if (Input.GetKey("a") || Input.GetKey("left"))
         {
             rb2D.velocity = new Vector2(-runSpeed, rb2D.velocity.y);
 
-            if (isGrounded)
+            if (isGrounded && !isAttacking)
                 animator.Play("knight_walk");
 
-            spriteRenderer.flipX = true;
+            transform.localScale = new Vector3(-1.5f, 1.5f, 1.5f); //Turn whole player to the left
         }
-        else
+        else if (isGrounded)
         {
-            if (isGrounded)
+            if (!isAttacking)
                 animator.Play("knight_idle");
 
             rb2D.velocity = new Vector2(0, rb2D.velocity.y); //Reset horizontal velocity
@@ -101,7 +178,7 @@ public class PlayerController2D : MonoBehaviour
             jumpTimeCounter = jumpTime;
 
             rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
-            animator.Play("knight_jump");
+            //animator.Play("knight_jump");
         }
         //For variable jump height
         if (Input.GetKey("space") && isJumping) //Prevent double jump with isJumping check
