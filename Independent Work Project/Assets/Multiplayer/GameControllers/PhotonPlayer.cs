@@ -21,6 +21,7 @@ public class PhotonPlayer : MonoBehaviour
         if (PV.IsMine)
         {
             avatar = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Knight"), GameSetup.GS.spawnPoints[spawnPicker].position, GameSetup.GS.spawnPoints[spawnPicker].rotation, 0);
+            Debug.Log("Created Player");
         }
     }
 }

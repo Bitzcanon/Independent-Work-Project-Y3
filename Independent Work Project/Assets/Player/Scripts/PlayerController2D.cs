@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using Photon.Pun;
+
 using UnityEngine;
 
 public class PlayerController2D : MonoBehaviour
 {
+    private PhotonView PV;
+
     private Animator animator; //To switch between animations
     private Rigidbody2D rb2D;
     private SpriteRenderer spriteRenderer;
@@ -47,6 +52,8 @@ public class PlayerController2D : MonoBehaviour
 
     void Start()
     {
+        PV = GetComponent<PhotonView>();
+
         isGrounded = true;
 
         animator = GetComponent<Animator>();
@@ -56,28 +63,48 @@ public class PlayerController2D : MonoBehaviour
 
     private void Update()
     {
-
+        if (!PV.IsMine)
+        {
+            return;
+        }
         if (timeBetweenAttack <= 0)
         {
             if (Input.GetButtonDown("Fire1") && !isAttacking)
             {
                 isAttacking = true;
 
-                //Animations
-                if (!isGrounded)
-                {
-                    animator.Play("knight_jumpattack");
-                    StartCoroutine(DoBasicAttack(0.4f, "jumpattack"));
-                }
-                else
-                {
-                    animator.Play("knight_strike");
-                    StartCoroutine(DoBasicAttack(0.3f, "strike"));
-                }
+                PV.RPC("RPC_Attacking", RpcTarget.All);
+                ////Animations
+                //if (!isGrounded)
+                //{
+                //    animator.Play("knight_jumpattack");
+                //    StartCoroutine(DoBasicAttack(0.4f, "jumpattack"));
+                //}
+                //else
+                //{
+                //    animator.Play("knight_strike");
+                //    StartCoroutine(DoBasicAttack(0.3f, "strike"));
+                //}
             }
         }
         else
             timeBetweenAttack -= Time.deltaTime;
+    }
+
+    [PunRPC]
+    void RPC_Attacking()
+    {
+        //Animations
+        if (!isGrounded)
+        {
+            animator.Play("knight_jumpattack");
+            StartCoroutine(DoBasicAttack(0.4f, "jumpattack"));
+        }
+        else
+        {
+            animator.Play("knight_strike");
+            StartCoroutine(DoBasicAttack(0.3f, "strike"));
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -98,7 +125,7 @@ public class PlayerController2D : MonoBehaviour
             Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(strikeAttackPosition.position, jumpAttackRange, whatIsEnemies);
             for (int i = 0; i < enemiesToDamage.Length; i++)
             {
-                enemiesToDamage[i].GetComponent<PlayerInfo>().TakeDamage(damage); //Reduce HP
+                enemiesToDamage[i].GetComponent<PlayerSetup>().TakeDamage(damage); //Reduce HP
             }
         }
         else if (attackType == "strike")
@@ -106,7 +133,7 @@ public class PlayerController2D : MonoBehaviour
             Collider2D[] enemiesToDamage = Physics2D.OverlapBoxAll(strikeAttackPosition.position, new Vector2(strikeAttackRangeX, strikeAttackRangeY), 0, whatIsEnemies);
             for (int i = 0; i < enemiesToDamage.Length; i++)
             {
-                enemiesToDamage[i].GetComponent<PlayerInfo>().TakeDamage(damage); //Reduce HP
+                enemiesToDamage[i].GetComponent<PlayerSetup>().TakeDamage(damage); //Reduce HP
             }
         }
         timeBetweenAttack = startTimeBetweenAttack;
@@ -117,86 +144,89 @@ public class PlayerController2D : MonoBehaviour
 
     private void FixedUpdate() //For physics updating
     {
-        if ((Physics2D.Linecast(transform.position, groundCheckC.position, 1 << LayerMask.NameToLayer("Ground"))) ||
-            (Physics2D.Linecast(transform.position, groundCheckL.position, 1 << LayerMask.NameToLayer("Ground"))) ||
-            (Physics2D.Linecast(transform.position, groundCheckR.position, 1 << LayerMask.NameToLayer("Ground")))) //If it hits a layer called ground
+        if (PV.IsMine)
         {
-            isGrounded = true;
-        }
-        else
-        {
-            isGrounded = false;
+            if ((Physics2D.Linecast(transform.position, groundCheckC.position, 1 << LayerMask.NameToLayer("Ground"))) ||
+                (Physics2D.Linecast(transform.position, groundCheckL.position, 1 << LayerMask.NameToLayer("Ground"))) ||
+                (Physics2D.Linecast(transform.position, groundCheckR.position, 1 << LayerMask.NameToLayer("Ground")))) //If it hits a layer called ground
+            {
+                isGrounded = true;
+            }
+            else
+            {
+                isGrounded = false;
 
-            if (!isAttacking)
-                animator.Play("knight_jump");
-        }
+                if (!isAttacking)
+                    animator.Play("knight_jump");
+            }
 
-        if (Input.GetKey("d") || Input.GetKey("right"))
-        {
-            rb2D.velocity = new Vector2(runSpeed, rb2D.velocity.y);
+            if (Input.GetKey("d") || Input.GetKey("right"))
+            {
+                rb2D.velocity = new Vector2(runSpeed, rb2D.velocity.y);
 
-            if (isGrounded && !isAttacking)
-                animator.Play("knight_walk");
+                if (isGrounded && !isAttacking)
+                    animator.Play("knight_walk");
 
-            transform.localScale = new Vector3(1.5f, 1.5f, 1.5f); //Turn whole player to the right
-        }
-        else if (Input.GetKey("a") || Input.GetKey("left"))
-        {
-            rb2D.velocity = new Vector2(-runSpeed, rb2D.velocity.y);
+                transform.localScale = new Vector3(1.5f, 1.5f, 1.5f); //Turn whole player to the right
+            }
+            else if (Input.GetKey("a") || Input.GetKey("left"))
+            {
+                rb2D.velocity = new Vector2(-runSpeed, rb2D.velocity.y);
 
-            if (isGrounded && !isAttacking)
-                animator.Play("knight_walk");
+                if (isGrounded && !isAttacking)
+                    animator.Play("knight_walk");
 
-            transform.localScale = new Vector3(-1.5f, 1.5f, 1.5f); //Turn whole player to the left
-        }
-        else if (isGrounded)
-        {
-            if (!isAttacking)
-                animator.Play("knight_idle");
+                transform.localScale = new Vector3(-1.5f, 1.5f, 1.5f); //Turn whole player to the left
+            }
+            else if (isGrounded)
+            {
+                if (!isAttacking)
+                    animator.Play("knight_idle");
 
-            rb2D.velocity = new Vector2(0, rb2D.velocity.y); //Reset horizontal velocity
-        }
+                rb2D.velocity = new Vector2(0, rb2D.velocity.y); //Reset horizontal velocity
+            }
 
-        jumpPressedRemember -= Time.deltaTime;
-        if (Input.GetKeyDown("space")) //Setting the jump recently float value
-        {
-            jumpPressedRemember = jumpSlackTimer;
-        }
+            jumpPressedRemember -= Time.deltaTime;
+            if (Input.GetKeyDown("space")) //Setting the jump recently float value
+            {
+                jumpPressedRemember = jumpSlackTimer;
+            }
 
-        groundedRemember -= Time.deltaTime;
-        if (isGrounded)
-        {
-            groundedRemember = groundedSlackTimer;
-        }
+            groundedRemember -= Time.deltaTime;
+            if (isGrounded)
+            {
+                groundedRemember = groundedSlackTimer;
+            }
 
-        if ((jumpPressedRemember >= 0f) && (groundedRemember >= 0f)) //Recently jumped or recently grounded checks before jumping
-        {
-            jumpPressedRemember = 0f;
-            groundedRemember = 0f;
+            if ((jumpPressedRemember >= 0f) && (groundedRemember >= 0f)) //Recently jumped or recently grounded checks before jumping
+            {
+                jumpPressedRemember = 0f;
+                groundedRemember = 0f;
 
-            isJumping = true;
-            jumpTimeCounter = jumpTime;
+                isJumping = true;
+                jumpTimeCounter = jumpTime;
 
-            rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
-            //animator.Play("knight_jump");
-        }
-        //For variable jump height
-        if (Input.GetKey("space") && isJumping) //Prevent double jump with isJumping check
-        {
-           if (jumpTimeCounter > 0)
-           {
                 rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
-                jumpTimeCounter -= Time.deltaTime;
-           }
-           else
-           {
-                isJumping = false;
-           }
-        }
+                //animator.Play("knight_jump");
+            }
+            //For variable jump height
+            if (Input.GetKey("space") && isJumping) //Prevent double jump with isJumping check
+            {
+                if (jumpTimeCounter > 0)
+                {
+                    rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
+                    jumpTimeCounter -= Time.deltaTime;
+                }
+                else
+                {
+                    isJumping = false;
+                }
+            }
 
-        if (Input.GetKeyUp("space"))
-        {
-            isJumping = false;
+            if (Input.GetKeyUp("space"))
+            {
+                isJumping = false;
+            }
         }
     }
 }

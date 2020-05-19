@@ -100,7 +100,7 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks
                     lessThanMaxPlayers -= Time.deltaTime;
                     timeToStart = lessThanMaxPlayers;
                 }
-                Debug.Log("Display time to start to the players: " + timeToStart);
+                //Debug.Log("Display time to start to the players: " + timeToStart);
                 if (timeToStart <= 0)
                 {
                     StartGame();
@@ -222,5 +222,16 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks
     private void RPC_CreatePlayer()
     {
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PhotonNetworkPlayer"), transform.position, Quaternion.identity, 0);
+
+        //USE THIS FOR AI
+        //PhotonNetwork.InstantiateSceneObject()
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        base.OnPlayerLeftRoom(otherPlayer);
+        //Display onto screen instead of Debug
+        Debug.Log(otherPlayer.NickName + "has left the game!");
+        playersInGame--;
     }
 }
