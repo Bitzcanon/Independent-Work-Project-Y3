@@ -71,20 +71,7 @@ public class PlayerController2D : MonoBehaviour
         {
             if (Input.GetButtonDown("Fire1") && !isAttacking)
             {
-                isAttacking = true;
-
                 PV.RPC("RPC_Attacking", RpcTarget.All);
-                ////Animations
-                //if (!isGrounded)
-                //{
-                //    animator.Play("knight_jumpattack");
-                //    StartCoroutine(DoBasicAttack(0.4f, "jumpattack"));
-                //}
-                //else
-                //{
-                //    animator.Play("knight_strike");
-                //    StartCoroutine(DoBasicAttack(0.3f, "strike"));
-                //}
             }
         }
         else
@@ -94,6 +81,7 @@ public class PlayerController2D : MonoBehaviour
     [PunRPC]
     void RPC_Attacking()
     {
+        isAttacking = true;
         //Animations
         if (!isGrounded)
         {

@@ -8,7 +8,9 @@ public class GameSetup : MonoBehaviour
 {
     public static GameSetup GS;
 
-    public Transform[] spawnPoints;
+    public Transform[] spawnPointsTeamBlue;
+    public Transform[] spawnPointsTeamRed;
+    public int nextPlayersTeam;
 
     private void OnEnable()
     {
@@ -32,5 +34,17 @@ public class GameSetup : MonoBehaviour
         while(PhotonNetwork.InRoom)
             yield return null;
         SceneManager.LoadScene(MultiplayerSettings.multiplayerSettings.menuScene);
+    }
+
+    public void UpdateTeam()
+    {
+        if (nextPlayersTeam == 1)
+        {
+            nextPlayersTeam = 2;
+        }
+        else
+        {
+            nextPlayersTeam = 1;
+        }
     }
 }

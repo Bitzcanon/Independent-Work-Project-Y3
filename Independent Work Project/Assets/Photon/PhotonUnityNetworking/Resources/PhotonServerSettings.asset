@@ -40,6 +40,9 @@ MonoBehaviour:
   - RPC_LoadedGameScene
   - OnDrawGizmosSelected
   - RPC_Attacking
+  - RPC_GetTeam
+  - RPC_SentTeam
+  - RPC_Movement
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
