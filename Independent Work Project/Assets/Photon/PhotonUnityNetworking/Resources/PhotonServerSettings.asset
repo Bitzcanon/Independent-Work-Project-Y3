@@ -43,6 +43,7 @@ MonoBehaviour:
   - RPC_GetTeam
   - RPC_SentTeam
   - RPC_Movement
+  - RPC_SetTeamLayer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

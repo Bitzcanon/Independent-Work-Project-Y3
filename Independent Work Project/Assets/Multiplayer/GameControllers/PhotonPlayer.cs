@@ -5,6 +5,7 @@ using Photon.Pun;
 
 using System.IO;
 using UnityEngine;
+using System.ComponentModel;
 
 public class PhotonPlayer : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class PhotonPlayer : MonoBehaviour
                 int spawnPicker = Random.Range(0, GameSetup.GS.spawnPointsTeamRed.Length);
                 if (PV.IsMine)
                 {
-                    avatar = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Knight"), GameSetup.GS.spawnPointsTeamRed[spawnPicker].position, GameSetup.GS.spawnPointsTeamRed[spawnPicker].rotation, 0);
+                    avatar = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "KnightRed"), GameSetup.GS.spawnPointsTeamRed[spawnPicker].position, GameSetup.GS.spawnPointsTeamRed[spawnPicker].rotation, 0);
                     Debug.Log("Created Player");
                 }
             }
