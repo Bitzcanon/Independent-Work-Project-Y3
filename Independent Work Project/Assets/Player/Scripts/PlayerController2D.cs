@@ -85,12 +85,12 @@ public class PlayerController2D : MonoBehaviour
         //Animations
         if (!isGrounded)
         {
-            animator.Play("knight_jumpattack");
+            PV.RPC("RPC_Animations", RpcTarget.All, "knight_jumpattack");
             StartCoroutine(DoBasicAttack(0.4f, "jumpattack"));
         }
         else
         {
-            animator.Play("knight_strike");
+            PV.RPC("RPC_Animations", RpcTarget.All, "knight_strike");
             StartCoroutine(DoBasicAttack(0.3f, "strike"));
         }
     }
@@ -130,6 +130,31 @@ public class PlayerController2D : MonoBehaviour
         isAttacking = false;
     }
 
+    [PunRPC]
+    void RPC_Animations(string name)
+    {
+        if (name == "knight_walk")
+        {
+            animator.Play("knight_walk");
+        }
+        else if (name == "knight_jump")
+        {
+            animator.Play("knight_jump");
+        }
+        else if (name == "knight_idle")
+        {
+            animator.Play("knight_idle");
+        }
+        else if (name == "knight_jumpattack")
+        {
+            animator.Play("knight_jumpattack");
+        }
+        else if (name == "knight_strike")
+        {
+            animator.Play("knight_strike");
+        }
+    }
+
     private void FixedUpdate() //For physics updating
     {
         if (PV.IsMine)
@@ -145,7 +170,7 @@ public class PlayerController2D : MonoBehaviour
                 isGrounded = false;
 
                 if (!isAttacking)
-                    animator.Play("knight_jump");
+                    PV.RPC("RPC_Animations", RpcTarget.All, "knight_jump");
             }
 
             if (Input.GetKey("d") || Input.GetKey("right"))
@@ -153,7 +178,7 @@ public class PlayerController2D : MonoBehaviour
                 rb2D.velocity = new Vector2(runSpeed, rb2D.velocity.y);
 
                 if (isGrounded && !isAttacking)
-                    animator.Play("knight_walk");
+                    PV.RPC("RPC_Animations", RpcTarget.All, "knight_walk");
 
                 transform.localScale = new Vector3(1.5f, 1.5f, 1.5f); //Turn whole player to the right
             }
@@ -162,14 +187,14 @@ public class PlayerController2D : MonoBehaviour
                 rb2D.velocity = new Vector2(-runSpeed, rb2D.velocity.y);
 
                 if (isGrounded && !isAttacking)
-                    animator.Play("knight_walk");
+                    PV.RPC("RPC_Animations", RpcTarget.All, "knight_walk");
 
                 transform.localScale = new Vector3(-1.5f, 1.5f, 1.5f); //Turn whole player to the left
             }
             else if (isGrounded)
             {
                 if (!isAttacking)
-                    animator.Play("knight_idle");
+                    PV.RPC("RPC_Animations", RpcTarget.All, "knight_idle");
 
                 rb2D.velocity = new Vector2(0, rb2D.velocity.y); //Reset horizontal velocity
             }
@@ -195,7 +220,6 @@ public class PlayerController2D : MonoBehaviour
                 jumpTimeCounter = jumpTime;
 
                 rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
-                //animator.Play("knight_jump");
             }
             //For variable jump height
             if (Input.GetKey("space") && isJumping) //Prevent double jump with isJumping check

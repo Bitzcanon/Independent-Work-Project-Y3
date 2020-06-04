@@ -44,6 +44,7 @@ MonoBehaviour:
   - RPC_SentTeam
   - RPC_Movement
   - RPC_SetTeamLayer
+  - RPC_Animations
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
