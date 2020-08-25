@@ -69,11 +69,17 @@ public class CameraFollow : MonoBehaviour
 
     void Start()
     {
+        if (target == null)
+            return;
+
         focusArea = new FocusArea(target.GetComponent<BoxCollider2D>().bounds, focusAreaSize);
     }
 
     void LateUpdate()
     {
+        if (target == null)
+            return;
+
         focusArea.Update(target.GetComponent<BoxCollider2D>().bounds);
 
         Vector3 focusPosition = focusArea.center + Vector2.up * verticalOffset;

@@ -68,4 +68,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PV: {fileID: 4526837621457635720}
   avatar: {fileID: 0}
+  hillSpawn: {fileID: 0}
   team: 0

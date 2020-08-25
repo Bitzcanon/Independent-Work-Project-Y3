@@ -133,6 +133,9 @@ public class PlayerController2D : MonoBehaviour
     [PunRPC]
     void RPC_Animations(string name)
     {
+        if (animator == null)
+            return;
+
         if (name == "knight_walk")
         {
             animator.Play("knight_walk");

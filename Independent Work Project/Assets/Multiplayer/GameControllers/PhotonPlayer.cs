@@ -11,6 +11,7 @@ public class PhotonPlayer : MonoBehaviour
 {
     public PhotonView PV;
     public GameObject avatar;
+    public GameObject hillSpawn;
 
     public int team;
 
@@ -47,7 +48,6 @@ public class PhotonPlayer : MonoBehaviour
                 }
             }
         }
-
     }
 
     [PunRPC]
