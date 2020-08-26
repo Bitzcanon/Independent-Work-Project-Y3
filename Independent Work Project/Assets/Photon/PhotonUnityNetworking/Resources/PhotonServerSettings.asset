@@ -36,21 +36,16 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
-  - RPC_CreatePlayer
-  - RPC_LoadedGameScene
-  - OnDrawGizmosSelected
-  - RPC_Attacking
-  - RPC_GetTeam
-  - RPC_SentTeam
-  - RPC_Movement
-  - RPC_SetTeamLayer
-  - RPC_Animations
   - RPC_AddScore
-  - RPC_ContestedText
+  - RPC_Animations
+  - RPC_Attacking
   - RPC_BlueCaptureBlock
+  - RPC_ContestedText
+  - RPC_CreatePlayer
+  - RPC_GetTeam
+  - RPC_LoadedGameScene
   - RPC_RedCaptureBlock
-  - RPC_RespawnNetwork
-  - UpdateHealthBar
+  - RPC_SentTeam
   - RPC_UpdateHealthBar
   DisableAutoOpenWizard: 1
   ShowSettings: 1
