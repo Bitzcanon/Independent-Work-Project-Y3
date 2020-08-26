@@ -50,6 +50,9 @@ public class PlayerController2D : MonoBehaviour
     public float jumpAttackRange;
     public int damage;
 
+    //Player Death
+    public bool isDead = false;
+
     void Start()
     {
         PV = GetComponent<PhotonView>();
@@ -67,6 +70,18 @@ public class PlayerController2D : MonoBehaviour
         {
             return;
         }
+
+        if (GetComponent<PlayerSetup>().GetDeadStatus() == true)
+        {
+            isDead = true;
+            PV.RPC("RPC_Animations", RpcTarget.All, "knight_die");
+        }
+        else
+            isDead = false;
+
+        if (isDead)
+            return;
+
         if (timeBetweenAttack <= 0)
         {
             if (Input.GetButtonDown("Fire1") && !isAttacking)
@@ -156,12 +171,19 @@ public class PlayerController2D : MonoBehaviour
         {
             animator.Play("knight_strike");
         }
+        else if (name == "knight_die")
+        {
+            animator.Play("knight_die");
+        }
     }
 
     private void FixedUpdate() //For physics updating
     {
         if (PV.IsMine)
         {
+            if (isDead)
+                return;
+
             if ((Physics2D.Linecast(transform.position, groundCheckC.position, 1 << LayerMask.NameToLayer("Ground"))) ||
                 (Physics2D.Linecast(transform.position, groundCheckL.position, 1 << LayerMask.NameToLayer("Ground"))) ||
                 (Physics2D.Linecast(transform.position, groundCheckR.position, 1 << LayerMask.NameToLayer("Ground")))) //If it hits a layer called ground

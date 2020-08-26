@@ -22,6 +22,10 @@ public class HillScore : MonoBehaviour
     public Text redTextScore;
     public Text contestedText;
 
+    public GameObject winnerPanel;
+    public Text winnerText;
+    public bool gameOver;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,6 +33,7 @@ public class HillScore : MonoBehaviour
 
         blueCaptureBlock = false;
         redCaptureBlock = false;
+        gameOver = false;
     }
 
     // Update is called once per frame
@@ -75,6 +80,9 @@ public class HillScore : MonoBehaviour
         if (!PV.IsMine)
             return;
 
+        if (gameOver)
+            return;
+
         if (blueCaptureBlock && redCaptureBlock)
         {
             return;
@@ -82,6 +90,9 @@ public class HillScore : MonoBehaviour
 
         if (collision.gameObject.layer == 9) //Blue Team
         {
+            if (collision.gameObject.GetComponent<PlayerSetup>().GetDeadStatus())
+                return;
+
             PV.RPC("RPC_BlueCaptureBlock", RpcTarget.All, true);
             if (captureTimerBlue > 1f)
             {
@@ -91,6 +102,9 @@ public class HillScore : MonoBehaviour
         }
         else if (collision.gameObject.layer == 10) //Red Team
         {
+            if (collision.gameObject.GetComponent<PlayerSetup>().GetDeadStatus())
+                return;
+
             PV.RPC("RPC_RedCaptureBlock", RpcTarget.All, true);
             if (captureTimerRed > 1f)
             {
@@ -106,16 +120,31 @@ public class HillScore : MonoBehaviour
         if (team == false)
         {
             blueScore += 1;
+            if (blueScore >= 30)
+            {
+                winnerPanel.SetActive(true);
+                winnerText.text = "Blue Team Wins!";
+                gameOver = true;
+            }
         }
         else if (team == true)
         {
             redScore += 1;
+            if (redScore >= 30)
+            {
+                winnerPanel.SetActive(true);
+                winnerText.text = "Red Team Wins!";
+                gameOver = true;
+            }
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (!PV.IsMine)
+            return;
+
+        if (gameOver)
             return;
 
         if (collision.gameObject.layer == 9)

@@ -49,6 +49,9 @@ MonoBehaviour:
   - RPC_ContestedText
   - RPC_BlueCaptureBlock
   - RPC_RedCaptureBlock
+  - RPC_RespawnNetwork
+  - UpdateHealthBar
+  - RPC_UpdateHealthBar
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
