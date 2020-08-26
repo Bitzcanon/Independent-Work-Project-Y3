@@ -34,6 +34,8 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks
     private float atMaxPlayers; //When max players are reached, start countdown timer from 5
     private float timeToStart;
 
+    public Text playerCount;
+
     private void Awake()
     {
         //Set up singleton
@@ -125,6 +127,7 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks
         if (MultiplayerSettings.multiplayerSettings.delayStart)
         {
             //Change this Debug message with actual UI code to show in lobby
+            playerCount.text = "Players: " + playersInRoom + "/" + MultiplayerSettings.multiplayerSettings.maxPlayers;
             Debug.Log("Players in room out of max players possible: (" + playersInRoom + ":" + MultiplayerSettings.multiplayerSettings.maxPlayers + ")");
             if (playersInRoom > 1)
             {
@@ -153,6 +156,7 @@ public class PhotonRoom : MonoBehaviourPunCallbacks, IInRoomCallbacks
         playersInRoom++;
         if (MultiplayerSettings.multiplayerSettings.delayStart)
         {
+            playerCount.text = "Players: " + playersInRoom + "/" + MultiplayerSettings.multiplayerSettings.maxPlayers;
             Debug.Log("Players in room out of max players possible: (" + playersInRoom + ":" + MultiplayerSettings.multiplayerSettings.maxPlayers + ")");
             if (playersInRoom > 1)
             {
